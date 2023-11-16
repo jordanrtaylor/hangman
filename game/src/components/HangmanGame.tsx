@@ -28,17 +28,29 @@ const HangmanGame: React.FC<HangmanGameProps> = ({ players, theme }) => {
     setRemainingAttempts(6);
   }, [theme, currentPlayerIndex]);
 
+  const hangmanParts = [
+    <circle cx="70" cy="30" r="10" />, // Head
+    <line x1="70" y1="40" x2="70" y2="70" />, // Torso
+    <line x1="70" y1="50" x2="60" y2="60" />, // Left Arm
+    <line x1="70" y1="50" x2="80" y2="60" />, // Right Arm
+    <line x1="70" y1="70" x2="60" y2="80" />, // Left Leg
+    <line x1="70" y1="70" x2="80" y2="80" />  // Right Leg
+  ];
+
   const guessLetter = (letter: string) => {
     const updatedGuessedLetters = new Set(guessedLetters.add(letter));
     setGuessedLetters(updatedGuessedLetters);
-
+  
     if (!currentWord.includes(letter)) {
       const newScores = [...scores];
-      newScores[currentPlayerIndex] -= 1;
+      // Decrement score only if it's greater than 0
+      if (newScores[currentPlayerIndex] > 0) {
+        newScores[currentPlayerIndex] -= 1;
+      }
       setScores(newScores);
       setRemainingAttempts(remainingAttempts - 1);
     }
-
+  
     checkGameState(updatedGuessedLetters);
   };
 
@@ -72,7 +84,9 @@ const HangmanGame: React.FC<HangmanGameProps> = ({ players, theme }) => {
   return (
     <div className="hangman-game">
       <h1>Hangman</h1>
-      {/* Hangman drawing placeholder */}
+      <svg width="140" height="100" className="hangman-drawing">
+        {hangmanParts.slice(0, 6 - remainingAttempts)}
+      </svg>
       <div className="word">
         <p>{renderedWord}</p>
       </div>

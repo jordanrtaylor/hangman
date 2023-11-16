@@ -27,3 +27,15 @@
 .hangman-game .player-info {
   margin-top: 20px;
 }
+
+.hangman-game .hangman-drawing {
+  margin: 0 auto;
+  border: 1px solid #ccc; /* Optional: for visualization */
+}
+
+.hangman-game .hangman-drawing line,
+.hangman-game .hangman-drawing circle {
+  fill: none;
+  stroke: rgb(255, 255, 255);
+  stroke-width: 2;
+}
