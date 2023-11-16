@@ -1,0 +1,15 @@
+/* Scoreboard.css */
+.scoreboard {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .scoreboard ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .scoreboard li {
+    margin: 10px 0;
+  }
+  

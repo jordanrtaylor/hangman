@@ -1,99 +1,98 @@
-// HangmanGame.tsx
 import React, { useState, useEffect } from 'react';
-import { Player } from '../types';
-import computerScienceWords from '../Themes/ComputerScience'; // Static import for demonstration
-import '../HangmanGame.css';
+import '../styles/HangmanGame.css';
+import Scoreboard from './Scoreboard';
+import { ComputerScienceWords } from '../themes/ComputerScience';
+import { MeteorologyWords } from '../themes/Meteorology';
+import { OceanologyWords } from '../themes/Oceanology';
 
 interface HangmanGameProps {
-  players: Player[];
+  players: string[];
   theme: string;
-  onGameEnd: (players: Player[]) => void;
 }
 
-const HangmanGame: React.FC<HangmanGameProps> = ({ players, theme, onGameEnd }) => {
-  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
+const HangmanGame: React.FC<HangmanGameProps> = ({ players, theme }) => {
+  const [currentWord, setCurrentWord] = useState('');
   const [guessedLetters, setGuessedLetters] = useState(new Set<string>());
+  const [remainingAttempts, setRemainingAttempts] = useState(6);
+  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
+  const [scores, setScores] = useState<number[]>(new Array(players.length).fill(6));
   const [gameOver, setGameOver] = useState(false);
 
-  // Select a random word from the theme's word list
-  const selectRandomWord = (words: string[]) => {
-    return words[Math.floor(Math.random() * words.length)].toUpperCase();
+  useEffect(() => {
+    const wordList = theme === 'ComputerScience' ? ComputerScienceWords
+                  : theme === 'Meteorology' ? MeteorologyWords
+                  : OceanologyWords;
+    const word = wordList[Math.floor(Math.random() * wordList.length)].toUpperCase();
+    setCurrentWord(word);
+    setGuessedLetters(new Set<string>());
+    setRemainingAttempts(6);
+  }, [theme, currentPlayerIndex]);
+
+  const guessLetter = (letter: string) => {
+    const updatedGuessedLetters = new Set(guessedLetters.add(letter));
+    setGuessedLetters(updatedGuessedLetters);
+
+    if (!currentWord.includes(letter)) {
+      const newScores = [...scores];
+      newScores[currentPlayerIndex] -= 1;
+      setScores(newScores);
+      setRemainingAttempts(remainingAttempts - 1);
+    }
+
+    checkGameState(updatedGuessedLetters);
   };
 
-  // State to track the current word to guess
-  const [currentWord, setCurrentWord] = useState(selectRandomWord(computerScienceWords));
-
-  useEffect(() => {
-    // Reset the current word when the theme changes
-    setCurrentWord(selectRandomWord(computerScienceWords));
-  }, [theme]);
-  // Function to handle letter guesses
-  const handleGuess = (letter: string) => {
-    if (gameOver || guessedLetters.has(letter)) return;
-
-    setGuessedLetters(new Set([...guessedLetters, letter]));
-
-    // Check if the letter is in the word
-    if (!currentWord.includes(letter)) {
-      // Incorrect guess, decrement the player's score
-      const newPlayers = [...players];
-      newPlayers[currentPlayerIndex].score -= 1;
-      if (newPlayers[currentPlayerIndex].score <= 0) {
-        // Move to the next player or end the game
-        if (currentPlayerIndex + 1 < players.length) {
-          setCurrentPlayerIndex(currentPlayerIndex + 1);
-        } else {
-          setGameOver(true);
-          onGameEnd(newPlayers);
-        }
+  const checkGameState = (updatedGuessedLetters: Set<string>) => {
+    const isWordGuessed = currentWord.split('').every(letter => updatedGuessedLetters.has(letter));
+    if (isWordGuessed || remainingAttempts <= 0) {
+      if (currentPlayerIndex === players.length - 1) {
+        // All players have played, game over
+        setGameOver(true);
+      } else {
+        // Move to the next player
+        setCurrentPlayerIndex(currentPlayerIndex + 1);
       }
-    } else {
-      // Correct guess, update the game state if necessary
-      // For example, check if the player has won
     }
   };
 
-  // Function to start a new round or reset the game
-  const resetGame = () => {
-    setCurrentPlayerIndex(0);
-    setGuessedLetters(new Set<string>());
-    setGameOver(false);
-    // You can also choose a new word and reset scores if needed
+  const isLetterGuessed = (letter: string) => {
+    return guessedLetters.has(letter);
   };
 
-  // Placeholder for the game's UI
+  const renderedWord = currentWord.split('').map(letter => 
+    isLetterGuessed(letter) ? letter : '_'
+  ).join(' ');
+
+  const currentPlayer = players[currentPlayerIndex];
+
+  if (gameOver) {
+    return <Scoreboard players={players} scores={scores}  />;
+  }
+
   return (
-    <div className="HangmanGame">
-      {gameOver ? (
-        <div className="gameOver">
-          <p>Game Over</p>
-          <button onClick={resetGame}>Start New Game</button>
-        </div>
-      ) : (
-        <div>
-          <div className="currentPlayer">
-            <p>Current Player: {players[currentPlayerIndex].name}</p>
-            <p>Score: {players[currentPlayerIndex].score}</p>
-          </div>
-          <div className="word">
-            {currentWord.split('').map((letter, index) => (
-              <span key={index} className="letter">
-                {guessedLetters.has(letter) ? letter : '_'}
-              </span>
-            ))}
-          </div>
-          <div>
-            {/* Render buttons or inputs for letter guesses */}
-            {'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map((letter) => (
-              <button key={letter} onClick={() => handleGuess(letter)} disabled={guessedLetters.has(letter)}>
-                {guessedLetters.has(letter) ? '□' : letter}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+    <div className="hangman-game">
+      <h1>Hangman</h1>
+      {/* Hangman drawing placeholder */}
+      <div className="word">
+        <p>{renderedWord}</p>
+      </div>
+      <div className="alphabet">
+        {'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(letter => (
+          <button 
+            key={letter} 
+            onClick={() => guessLetter(letter)} 
+            disabled={isLetterGuessed(letter)}
+          >
+            {letter}
+          </button>
+        ))}
+      </div>
+      <div className="player-info">
+        <p>{currentPlayer}</p>
+        <p>Score: {scores[currentPlayerIndex]}</p>
+      </div>
     </div>
   );
-};
+}
 
 export default HangmanGame;

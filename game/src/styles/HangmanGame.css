@@ -1,0 +1,29 @@
+.hangman-game {
+  text-align: center;
+}
+
+.hangman-game .word {
+  font-size: 2em;
+  letter-spacing: 0.1em;
+  margin: 20px 0;
+}
+
+.hangman-game .alphabet {
+  margin: 20px 0;
+}
+
+.hangman-game .alphabet button {
+  padding: 5px 10px;
+  margin: 0 2px;
+  background-color: #61dafb;
+  border: none;
+  border-radius: 3px;
+}
+
+.hangman-game .alphabet button:disabled {
+  background-color: #ccc;
+}
+
+.hangman-game .player-info {
+  margin-top: 20px;
+}

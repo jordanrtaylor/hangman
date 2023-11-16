@@ -1,6 +1,9 @@
-// types.ts
 export interface Player {
-    name: string;
-    score: number;
-  }
-  
+  name: string;
+  score: number;
+}
+
+export interface Theme {
+  name: string;
+  words: string[];
+}
