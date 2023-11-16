@@ -4,6 +4,7 @@ import Scoreboard from './Scoreboard';
 import { ComputerScienceWords } from '../themes/ComputerScience';
 import { MeteorologyWords } from '../themes/Meteorology';
 import { OceanologyWords } from '../themes/Oceanology';
+import { AstronomyWords } from '../themes/Astronomy';
 
 interface HangmanGameProps {
   players: string[];
@@ -21,6 +22,7 @@ const HangmanGame: React.FC<HangmanGameProps> = ({ players, theme }) => {
   useEffect(() => {
     const wordList = theme === 'ComputerScience' ? ComputerScienceWords
                   : theme === 'Meteorology' ? MeteorologyWords
+                  : theme === 'Astronomy' ? AstronomyWords
                   : OceanologyWords;
     const word = wordList[Math.floor(Math.random() * wordList.length)].toUpperCase();
     setCurrentWord(word);
@@ -55,13 +57,26 @@ const HangmanGame: React.FC<HangmanGameProps> = ({ players, theme }) => {
   };
 
   const checkGameState = (updatedGuessedLetters: Set<string>) => {
-    const isWordGuessed = currentWord.split('').every(letter => updatedGuessedLetters.has(letter));
-    if (isWordGuessed || remainingAttempts <= 0) {
+    const isWordGuessed = currentWord.split(' ').every(word => 
+      word.split('').every(letter => updatedGuessedLetters.has(letter) || letter === ' ')
+    );
+    
+    if (isWordGuessed) {
+      // Current player has guessed the word, end game for them
+      const newScores = [...scores];
+      newScores[currentPlayerIndex] = remainingAttempts; // Update score based on remaining attempts
+      setScores(newScores);
+
       if (currentPlayerIndex === players.length - 1) {
-        // All players have played, game over
         setGameOver(true);
       } else {
-        // Move to the next player
+        setCurrentPlayerIndex(currentPlayerIndex + 1);
+      }
+    } else if (remainingAttempts <= 0) {
+      // Current player has no remaining attempts, move to next player or end game
+      if (currentPlayerIndex === players.length - 1) {
+        setGameOver(true);
+      } else {
         setCurrentPlayerIndex(currentPlayerIndex + 1);
       }
     }
@@ -71,9 +86,11 @@ const HangmanGame: React.FC<HangmanGameProps> = ({ players, theme }) => {
     return guessedLetters.has(letter);
   };
 
-  const renderedWord = currentWord.split('').map(letter => 
-    isLetterGuessed(letter) ? letter : '_'
-  ).join(' ');
+  const renderedWord = currentWord.split(' ').map(word => 
+    word.split('').map(letter => 
+      isLetterGuessed(letter) ? letter : '_'
+    ).join(' ')
+  ).join('\n'); // Join words with a newline
 
   const currentPlayer = players[currentPlayerIndex];
 
@@ -87,7 +104,7 @@ const HangmanGame: React.FC<HangmanGameProps> = ({ players, theme }) => {
       <svg width="140" height="100" className="hangman-drawing">
         {hangmanParts.slice(0, 6 - remainingAttempts)}
       </svg>
-      <div className="word">
+      <div className="word" style={{ whiteSpace: 'pre-line' }}>
         <p>{renderedWord}</p>
       </div>
       <div className="alphabet">

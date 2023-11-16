@@ -37,6 +37,7 @@ const MainMenu = ({ onStartGame }: { onStartGame: (players: string[], theme: str
           <option value="ComputerScience">Computer Science</option>
           <option value="Meteorology">Meteorology</option>
           <option value="Oceanology">Oceanology</option>
+          <option value="Astronomy">Astronomy</option>
         </select>
       </div>
       <div>
