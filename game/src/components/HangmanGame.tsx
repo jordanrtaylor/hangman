@@ -11,8 +11,15 @@ interface HangmanGameProps {
   theme: string;
 }
 
+interface WordEntry {
+  word: string;
+  definition: string;
+}
+
+
 const HangmanGame: React.FC<HangmanGameProps> = ({ players, theme }) => {
   const [currentWord, setCurrentWord] = useState('');
+  const [currentDefinition, setCurrentDefinition] = useState(''); // State for definition
   const [guessedLetters, setGuessedLetters] = useState(new Set<string>());
   const [remainingAttempts, setRemainingAttempts] = useState(6);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
@@ -21,17 +28,26 @@ const HangmanGame: React.FC<HangmanGameProps> = ({ players, theme }) => {
   const [revealWord, setRevealWord] = useState(false);
 
   useEffect(() => {
-    const selectNewWord = () => {
-      const wordList = theme === 'ComputerScience' ? ComputerScienceWords
-                    : theme === 'Meteorology' ? MeteorologyWords
-                    : theme === 'Astronomy' ? AstronomyWords
-                    : OceanologyWords;
-      const word = wordList[Math.floor(Math.random() * wordList.length)].toUpperCase();
-      setCurrentWord(word);
-    };
-  
     selectNewWord();
   }, [theme, currentPlayerIndex]);
+
+  const selectNewWord = () => {
+    let wordList: WordEntry[]; // Declare the variable with the correct type
+  
+    if (theme === 'ComputerScience') {
+      wordList = ComputerScienceWords;
+    } else if (theme === 'Meteorology') {
+      wordList = MeteorologyWords;
+    } else if (theme === 'Astronomy') {
+      wordList = AstronomyWords;
+    } else {
+      wordList = OceanologyWords;
+    }
+  
+    const selected = wordList[Math.floor(Math.random() * wordList.length)];
+    setCurrentWord(selected.word.toUpperCase());
+    setCurrentDefinition(selected.definition);
+  };
 
   const hangmanParts = [
     <circle cx="70" cy="30" r="10" />, // Head
@@ -49,24 +65,10 @@ const HangmanGame: React.FC<HangmanGameProps> = ({ players, theme }) => {
     } else {
       setGameOver(true);
     }
-    // Reset game state for next player
     setRemainingAttempts(6);
     setGuessedLetters(new Set<string>());
     selectNewWord();
   };
-
-  const selectNewWord = () => {
-    const wordList = theme === 'ComputerScience' ? ComputerScienceWords
-                  : theme === 'Meteorology' ? MeteorologyWords
-                  : theme === 'Astronomy' ? AstronomyWords
-                  : OceanologyWords;
-    const word = wordList[Math.floor(Math.random() * wordList.length)].toUpperCase();
-    setCurrentWord(word);
-  };
-
-  useEffect(() => {
-    selectNewWord();
-  }, [theme, currentPlayerIndex]);
 
   const guessLetter = (letter: string) => {
     const updatedGuessedLetters = new Set(guessedLetters.add(letter));
@@ -74,16 +76,14 @@ const HangmanGame: React.FC<HangmanGameProps> = ({ players, theme }) => {
   
     if (!currentWord.includes(letter)) {
       const newScores = [...scores];
-      // Decrement score only if it's greater than 0
       if (newScores[currentPlayerIndex] > 0) {
         newScores[currentPlayerIndex] -= 1;
       }
       setScores(newScores);
       setRemainingAttempts(remainingAttempts - 1);
   
-      // Check if score hits 0 and reveal the word
       if (newScores[currentPlayerIndex] <= 0) {
-        setRevealWord(true); // Reveal word when score hits 0
+        setRevealWord(true);
       }
     }
 
@@ -96,10 +96,10 @@ const HangmanGame: React.FC<HangmanGameProps> = ({ players, theme }) => {
     );
     
     if (isWordGuessed) {
-      // Current player has guessed the word, end game for them
       const newScores = [...scores];
-      newScores[currentPlayerIndex] = remainingAttempts; // Update score based on remaining attempts
+      newScores[currentPlayerIndex] = remainingAttempts;
       setScores(newScores);
+      setRevealWord(true);
 
       if (currentPlayerIndex === players.length - 1) {
         setGameOver(true);
@@ -108,7 +108,6 @@ const HangmanGame: React.FC<HangmanGameProps> = ({ players, theme }) => {
       }
     } else if (remainingAttempts <= 0) {
       setRevealWord(true);
-      // Current player has no remaining attempts, move to next player or end game
       if (currentPlayerIndex === players.length - 1) {
         setGameOver(true);
       } else {
@@ -121,10 +120,11 @@ const HangmanGame: React.FC<HangmanGameProps> = ({ players, theme }) => {
     return (
       <div>
         <p>The word was: {currentWord}</p>
+        <p>Definition: {currentDefinition}</p>
         <button onClick={moveToNextPlayer}>Next Player</button>
       </div>
     );
-  }
+  }  
 
   const isLetterGuessed = (letter: string) => {
     return guessedLetters.has(letter);
@@ -134,12 +134,12 @@ const HangmanGame: React.FC<HangmanGameProps> = ({ players, theme }) => {
     word.split('').map(letter => 
       isLetterGuessed(letter) ? letter : '_'
     ).join(' ')
-  ).join('\n'); // Join words with a newline
+  ).join('\n');
 
   const currentPlayer = players[currentPlayerIndex];
 
   if (gameOver) {
-    return <Scoreboard players={players} scores={scores}  />;
+    return <Scoreboard players={players} scores={scores} />;
   }
 
   return (

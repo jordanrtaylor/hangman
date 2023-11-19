@@ -21,7 +21,7 @@ const MainMenu = ({ onStartGame }: { onStartGame: (players: string[], theme: str
 
   return (
     <div className="main-menu">
-      <h1>Hangman Game e</h1>
+      <h1>Hangman Game</h1>
       <div>
         <input
           type="text"
