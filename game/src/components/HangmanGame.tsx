@@ -145,6 +145,7 @@ const HangmanGame: React.FC<HangmanGameProps> = ({ players, theme }) => {
   return (
     <div className="hangman-game">
       <h1>Hangman</h1>
+      <p className="current-theme">Current Theme: {theme}</p>
       <svg width="140" height="100" className="hangman-drawing">
         {hangmanParts.slice(0, 6 - remainingAttempts)}
       </svg>
