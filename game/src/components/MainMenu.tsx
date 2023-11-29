@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import '../styles/MainMenu.css';
 
 const MainMenu = ({ onStartGame }: { onStartGame: (players: string[], theme: string) => void }) => {

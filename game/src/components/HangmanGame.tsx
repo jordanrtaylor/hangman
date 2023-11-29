@@ -80,13 +80,13 @@ const HangmanGame: React.FC<HangmanGameProps> = ({ players, theme }) => {
         newScores[currentPlayerIndex] -= 1;
       }
       setScores(newScores);
-      setRemainingAttempts(remainingAttempts - 1);
+      setRemainingAttempts(attempts => attempts - 1);
   
       if (newScores[currentPlayerIndex] <= 0) {
         setRevealWord(true);
       }
     }
-
+  
     checkGameState(updatedGuessedLetters);
   };
 

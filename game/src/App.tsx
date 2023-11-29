@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import MainMenu from './components/MainMenu';
 import HangmanGame from './components/HangmanGame';
-import { Theme } from './types'; // Import the Theme type if needed
 
 const App = () => {
   const [gameStarted, setGameStarted] = useState(false);
@@ -12,12 +11,6 @@ const App = () => {
     setPlayers(playersInput);
     setTheme(themeInput);
     setGameStarted(true);
-  };
-
-  const resetGame = () => {
-    setGameStarted(false);
-    setPlayers([]);
-    setTheme('');
   };
 
   return (

@@ -4,3 +4,8 @@
     padding: 20px;
   }
   
+  @media screen and (max-width: 600px) {
+    .hangman-game {
+        /* Adjusted styles for mobile */
+    }
+  }

@@ -16,7 +16,6 @@ export const OceanologyWords = [
   { word: 'Oceanography', definition: 'The study of the physical and biological aspects of the ocean' },
   { word: 'Pelagic', definition: 'Relating to the open sea, especially as opposed to the sea near the coast or the sea floor' },
   { word: 'Quota', definition: 'A fixed share of something that a person or group is entitled to receive or is bound to contribute' },
-  { word: 'Reef', definition: 'A ridge of jagged rock, coral, or sand just above or below the surface of the sea' },
   { word: 'Salinity', definition: 'The concentration of salt in water, typically measured in parts per thousand' },
   { word: 'Tsunami', definition: 'A long high sea wave caused by an earthquake, submarine landslide, or other disturbance' },
   { word: 'Upwelling', definition: 'A rising of seawater, magma, or other liquid' },
